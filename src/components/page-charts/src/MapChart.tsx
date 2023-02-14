@@ -2,16 +2,22 @@
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2023-02-08 17:48:57
  * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2023-02-09 10:14:58
+ * @LastEditTime: 2023-02-13 15:33:54
  * @FilePath: \react-admin\src\components\page-charts\src\PieChart.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import BaseChart from "@/components/echarts";
 import { convertData } from "../utils/convert-data";
-import { useMemo } from "react";
-const MapChart = (props: any) => {
+import { FC, useMemo } from "react";
+import { EChartsOption } from "echarts";
+
+interface MapChartProps {
+	data: number[];
+}
+
+const MapChart: FC<MapChartProps> = props => {
 	const { data } = props;
-	const options = useMemo(
+	const options = useMemo<EChartsOption>(
 		() => ({
 			backgroundColor: "#fff",
 			title: {
@@ -57,7 +63,7 @@ const MapChart = (props: any) => {
 					name: "销量",
 					type: "scatter",
 					coordinateSystem: "geo",
-					data: convertData(props.mapData),
+					data: convertData(props.data),
 					symbolSize: 12,
 					emphasis: {
 						itemStyle: {

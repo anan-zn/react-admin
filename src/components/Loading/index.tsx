@@ -1,7 +1,12 @@
 import { Spin } from "antd";
+import { FC } from "react";
 import "./index.less";
 
-const Loading = ({ tip = "Loading" }: { tip?: string }) => {
+interface Loading {
+	tip?: string;
+}
+
+const Loading: FC<Loading> = ({ tip = "Loading" }) => {
 	return <Spin tip={tip} size="large" className="request-loading"></Spin>;
 };
 

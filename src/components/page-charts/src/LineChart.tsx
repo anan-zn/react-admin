@@ -2,15 +2,21 @@
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2023-02-08 17:48:57
  * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2023-02-09 09:34:45
+ * @LastEditTime: 2023-02-13 16:55:23
  * @FilePath: \react-admin\src\components\page-charts\src\PieChart.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import BaseChart from "@/components/echarts";
-import { useMemo } from "react";
-const LineChart = (props: any) => {
-	const { labels, values } = props;
-	const options = useMemo(
+import { EChartsOption } from "echarts";
+import { FC, useMemo } from "react";
+
+interface LineChartProps {
+	data: { labels: string[]; values: string[] };
+}
+
+const LineChart: FC<LineChartProps> = props => {
+	const { labels, values } = props.data;
+	const options = useMemo<EChartsOption>(
 		() => ({
 			tooltip: {
 				trigger: "axis",
@@ -32,7 +38,7 @@ const LineChart = (props: any) => {
 				{
 					type: "category",
 					boundaryGap: false,
-					data: props.labels
+					data: labels
 				}
 			],
 			yAxis: [
@@ -49,7 +55,7 @@ const LineChart = (props: any) => {
 					emphasis: {
 						focus: "series"
 					},
-					data: props.values
+					data: values
 				}
 			]
 		}),

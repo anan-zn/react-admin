@@ -2,7 +2,7 @@
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2023-02-07 11:14:17
  * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2023-02-13 15:52:01
+ * @LastEditTime: 2023-02-15 17:58:57
  * @FilePath: \react-admin\src\layouts\components\Menu\index.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -14,12 +14,12 @@ import defaultRouter from "@/routers";
 import * as Icons from "@ant-design/icons";
 import { store } from "@/redux";
 import { getUserMenuList } from "@/api/modules/login";
-import { margeRoutesToDefRoutes, menuMapToRoutes } from "@/utils/mapMenu";
+import { margeRoutesToDefRoutes, menuMapToPermissions, menuMapToRoutes } from "@/utils/mapMenu";
 import { RouteObject } from "@/routers/interface";
 import { getOpenKeys, searchRoute } from "@/utils/utils";
 import Logo from "./components/Logo";
 import "./index.less";
-import { setUserMenuList, setMenuList } from "@/redux/modules/menu/action";
+import { setUserMenuList, setMenuList, setPermissions } from "@/redux/modules/menu/action";
 import { connect } from "react-redux";
 
 interface IProps {
@@ -27,12 +27,13 @@ interface IProps {
 	setBreadcrumbList: unknown;
 	setMenuList: typeof setMenuList;
 	setUserMenuList: typeof setUserMenuList;
+	setPermissions: typeof setPermissions;
 	menuList: RouteObject[];
 }
 
 const LayoutMenu: FC<IProps> = props => {
 	const { pathname } = useLocation();
-	const { isCollapse, setBreadcrumbList, setMenuList: setMenuListAction, setUserMenuList } = props;
+	const { isCollapse, setBreadcrumbList, setMenuList: setMenuListAction, setUserMenuList, setPermissions } = props;
 	const [selectedKeys, setSelectedKeys] = useState<string[]>([pathname]);
 	const [openKeys, setOpenKeys] = useState<string[]>([]);
 
@@ -76,7 +77,8 @@ const LayoutMenu: FC<IProps> = props => {
 
 	const deepLoopFloat = (menuList: Menu.UserMenuOptions[], newArr: MenuItem[] = []) => {
 		menuList.forEach((item: Menu.UserMenuOptions) => {
-			if (!item.children?.length) return newArr.push(getItem(item.name, item.url, addIcon("PieChartOutlined")));
+			if (!item.children?.length || item.type !== 1)
+				return newArr.push(getItem(item.name, item.url, addIcon("PieChartOutlined")));
 			newArr.push(getItem(item.name, item.url, addIcon("PieChartOutlined"), deepLoopFloat(item.children)));
 		});
 		return newArr;
@@ -89,7 +91,11 @@ const LayoutMenu: FC<IProps> = props => {
 		setLoading(true);
 		try {
 			const { data: userMenuData } = await getUserMenuList(store.getState().global.userInfo.id);
+			// 按钮权限
+			const permission = menuMapToPermissions(userMenuData ?? []);
+			setPermissions(permission);
 			setUserMenuList(userMenuData as Menu.UserMenuOptions[]);
+			const aaa = deepLoopFloat(userMenuData as Menu.UserMenuOptions[]);
 			setMenuList(deepLoopFloat(userMenuData as Menu.UserMenuOptions[]));
 			const newRoutes = menuMapToRoutes(userMenuData as Menu.UserMenuOptions[]);
 			// console.log("newRoutes", newRoutes);
@@ -131,5 +137,5 @@ const LayoutMenu: FC<IProps> = props => {
 };
 
 const mapStateToProps = (state: any) => state.menu;
-const mapDispatchToProps = { setMenuList, setUserMenuList };
+const mapDispatchToProps = { setMenuList, setUserMenuList, setPermissions };
 export default connect(mapStateToProps, mapDispatchToProps)(LayoutMenu);

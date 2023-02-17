@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { Col, Divider, Row } from "antd";
-import Sp from "@/components/StatisticalPanel";
+import Sp, { SpProps } from "@/components/StatisticalPanel";
 // import Cu from "@/components/CountUp";
 import { PieEchart, MapEchart, RoseEchart, LineEchart, BarEchart } from "@/components/page-charts";
 import ZnCard from "@/components/Card";
@@ -73,36 +73,38 @@ const DashBoard: React.FC = (props: any) => {
 	return (
 		<div className="dashboard">
 			<Row gutter={16}>
-				{topPanelData.map((item: { title: string; tips: string }) => {
-					<Col key={item.title}>
-						<Sp panelData={item}></Sp>
-					</Col>;
+				{topPanelData.map((item: SpProps["panelData"]) => {
+					return (
+						<Col span={6} key={item.title}>
+							<Sp panelData={item}></Sp>
+						</Col>
+					);
 				})}
 			</Row>
-			<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-				<Col className="gutter-row" span={6}>
+			<Row gutter={16}>
+				<Col className="gutter-row" span={8}>
 					<ZnCard title="分类商品数量(饼图)">
 						<PieEchart data={categoryGoodsCount}></PieEchart>
 					</ZnCard>
 				</Col>
-				<Col className="gutter-row" span={6}>
+				<Col className="gutter-row" span={8}>
 					<ZnCard title="不同城市商品销量">
 						<MapEchart data={addressGoodsSale}></MapEchart>
 					</ZnCard>
 				</Col>
-				<Col className="gutter-row" span={6}>
+				<Col className="gutter-row" span={8}>
 					<ZnCard title="分类商品数量(玫瑰图)">
 						<RoseEchart data={categoryGoodsCount}></RoseEchart>
 					</ZnCard>
 				</Col>
 			</Row>
-			<Row gutter={[16, 24]}>
-				<Col className="gutter-row" span={6}>
+			<Row gutter={16}>
+				<Col className="gutter-row" span={12}>
 					<ZnCard title="分类商品的销量">
 						<LineEchart data={categoryGoodsSale}></LineEchart>
 					</ZnCard>
 				</Col>
-				<Col className="gutter-row" span={6}>
+				<Col className="gutter-row" span={12}>
 					<ZnCard title="分类商品的收藏">
 						<BarEchart data={categoryGoodsSale}></BarEchart>
 					</ZnCard>

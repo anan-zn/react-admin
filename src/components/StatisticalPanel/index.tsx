@@ -1,20 +1,22 @@
-/*
- * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @Date: 2023-02-09 10:56:26
- * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2023-02-13 11:16:43
- * @FilePath: \react-admin\src\components\StatisticalPanel\index.tsx
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 import { Tooltip } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { FC } from "react";
-
-interface SpProps {
-	panelData: { title: string; tips: string };
+import Cu from "../CountUp";
+import "./index.less";
+export interface SpProps {
+	panelData: { title: string; tips: string; number1: number; number2: number; amount: string; subtitle: string };
 }
 
 const Sp: FC<SpProps> = ({ panelData }) => {
+	console.log("panelData", panelData);
+	const counterOption1 = {
+		decimalPlaces: 0, // 保留两位
+		prefix: "" // 单位
+	};
+	const counterOption2 = {
+		decimalPlaces: 0, // 保留两位
+		prefix: "￥" // 单位
+	};
 	return (
 		<div className="statistical">
 			<div className="header">
@@ -23,8 +25,15 @@ const Sp: FC<SpProps> = ({ panelData }) => {
 					<InfoCircleOutlined />
 				</Tooltip>
 			</div>
-			<div className="content"></div>
-			<div className="footer"></div>
+			<div className="content">
+				<Cu number={panelData.number1} option={panelData.amount === "saleroom" ? counterOption2 : counterOption1}></Cu>
+			</div>
+			<div className="footer">
+				<span>
+					{panelData.subtitle}
+					<Cu number={panelData.number2} option={panelData.amount === "saleroom" ? counterOption2 : counterOption1}></Cu>
+				</span>
+			</div>
 		</div>
 	);
 };

@@ -2,7 +2,7 @@
  * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
  * @Date: 2023-02-02 17:38:29
  * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2023-02-07 13:35:17
+ * @LastEditTime: 2023-02-14 17:25:57
  * @FilePath: \react-admin\src\views\login\components\LoginForm.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -15,17 +15,29 @@ import { useState } from "react";
 import { HOME_URL } from "@/config/config";
 import md5 from "js-md5";
 import { connect } from "react-redux";
-import { setToken, setUserInfo } from "@/redux/modules/global/action";
+import { setToken, setUserInfo, setEntireDepartments, setEntireMenus, setEntireRoles } from "@/redux/modules/global/action";
 import { setTabsList } from "@/redux/modules/tabs/action";
 import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { setUserMenuList } from "@/redux/modules/menu/action";
+import { getPageList } from "@/api/modules/system";
+import { store } from "@/redux";
 const LoginForm = (props: any) => {
 	const { t } = useTranslation();
-	const { setToken, setTabsList, setUserMenuList, setUserInfo } = props;
+	const { setToken, setTabsList, setUserMenuList, setUserInfo, setEntireDepartments, setEntireMenus, setEntireRoles } = props;
 	const navigate = useNavigate();
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState<boolean>(false);
-
+	const getInitalDataAction = async () => {
+		const { data: rolesData } = await getPageList<{ list: any }>("/role/list", { offset: 0, size: 100 });
+		const { data: entireDepartmentsData } = await getPageList<{ list: any }>("/department/list", {
+			offset: 0,
+			size: 100
+		});
+		const { data: entireMenusData } = await getPageList<{ list: any }>("/menu/list", {});
+		setEntireDepartments(entireDepartmentsData?.list);
+		setEntireMenus(entireMenusData?.list);
+		setEntireRoles(rolesData?.list);
+	};
 	const onFinish = async (loginForm: Login.ReqLoginForm) => {
 		// debugger;
 		try {
@@ -41,6 +53,7 @@ const LoginForm = (props: any) => {
 			// const { data: userMenuData } = await getUserMenuList(data!.id);
 			// setUserMenuList(userMenuData as Menu.UserMenuOptions[]);
 			setTabsList([]);
+			await getInitalDataAction();
 			message.success("登录成功！");
 			navigate(HOME_URL);
 		} finally {
@@ -86,5 +99,13 @@ const LoginForm = (props: any) => {
 	);
 };
 
-const mapDispatchToProps = { setToken, setTabsList, setUserMenuList, setUserInfo };
+const mapDispatchToProps = {
+	setToken,
+	setTabsList,
+	setUserMenuList,
+	setUserInfo,
+	setEntireDepartments,
+	setEntireMenus,
+	setEntireRoles
+};
 export default connect(null, mapDispatchToProps)(LoginForm);

@@ -21,10 +21,12 @@ import Logo from "./components/Logo";
 import "./index.less";
 import { setUserMenuList, setMenuList, setPermissions } from "@/redux/modules/menu/action";
 import { connect } from "react-redux";
+import { setBreadcrumbList } from "../../../redux/modules/breadcrumb/action";
+import { findAllBreadcrumb } from "../../../utils/utils";
 
 interface IProps {
 	isCollapse: boolean;
-	setBreadcrumbList: unknown;
+	setBreadcrumbList: typeof setBreadcrumbList;
 	setMenuList: typeof setMenuList;
 	setUserMenuList: typeof setUserMenuList;
 	setPermissions: typeof setPermissions;
@@ -95,8 +97,11 @@ const LayoutMenu: FC<IProps> = props => {
 			const permission = menuMapToPermissions(userMenuData ?? []);
 			setPermissions(permission);
 			setUserMenuList(userMenuData as Menu.UserMenuOptions[]);
-			const aaa = deepLoopFloat(userMenuData as Menu.UserMenuOptions[]);
 			setMenuList(deepLoopFloat(userMenuData as Menu.UserMenuOptions[]));
+			const breadcrumbList = findAllBreadcrumb(userMenuData!);
+			console.log("breadcrumbList", breadcrumbList);
+
+			setBreadcrumbList(findAllBreadcrumb(userMenuData!));
 			const newRoutes = menuMapToRoutes(userMenuData as Menu.UserMenuOptions[]);
 			// console.log("newRoutes", newRoutes);
 			const router = margeRoutesToDefRoutes(defaultRouter, newRoutes);
@@ -137,5 +142,5 @@ const LayoutMenu: FC<IProps> = props => {
 };
 
 const mapStateToProps = (state: any) => state.menu;
-const mapDispatchToProps = { setMenuList, setUserMenuList, setPermissions };
+const mapDispatchToProps = { setMenuList, setUserMenuList, setPermissions, setBreadcrumbList };
 export default connect(mapStateToProps, mapDispatchToProps)(LayoutMenu);

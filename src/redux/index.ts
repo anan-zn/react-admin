@@ -16,11 +16,13 @@ import global from "./modules/global/reducer";
 import menu from "./modules/menu/reducer";
 import analysis from "./modules/analysis/reducer";
 import system from "./modules/system/reducer";
+import breadcrumb from "./modules/breadcrumb/reducer";
 const reducer = combineReducers({
 	global,
 	menu,
 	analysis,
-	system
+	system,
+	breadcrumb
 });
 
 // redux 持久化

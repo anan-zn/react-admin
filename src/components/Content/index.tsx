@@ -19,9 +19,12 @@ export interface Page {
 	pageSize: number;
 }
 
+type SlotType = (value: any, record: any, index: number) => JSX.Element;
+
 interface IProps {
 	contentConfig: Record<string, unknown>;
 	pageName: string;
+	Slots?: Record<string, SlotType>;
 	editBtnClick?: (item?: any) => void;
 	newBtnClick?: () => void;
 }
@@ -31,7 +34,7 @@ const Content: ForwardRefRenderFunction<
 		getData: (otherInfo: any) => void;
 	},
 	IProps
-> = ({ contentConfig, pageName, editBtnClick, newBtnClick }, ref) => {
+> = ({ contentConfig, pageName, editBtnClick, newBtnClick, Slots }, ref) => {
 	const isCreate = usePermission(pageName, "create");
 	const isDelete = usePermission(pageName, "delete");
 	const isUpdate = usePermission(pageName, "update");
@@ -40,6 +43,7 @@ const Content: ForwardRefRenderFunction<
 		currentPage: 1,
 		pageSize: 10
 	});
+
 	// const totalCount = useMemo(() => store.getState().system[`${pageName}TotalCount`], []);
 	// const listData = useMemo(() => store.getState().system[`${pageName}List`], []);
 	const [totalCount, setTotalCount] = useState<number>(store.getState().system[`${pageName}TotalCount`]);
@@ -54,6 +58,7 @@ const Content: ForwardRefRenderFunction<
 	const handleNewData = async () => {
 		newBtnClick && newBtnClick();
 	};
+	// const setPropList = () => {};
 	const headerHandler = () => {
 		return (
 			<Button hidden={!isCreate} type="primary" size="middle" onClick={handleNewData}>
@@ -73,6 +78,23 @@ const Content: ForwardRefRenderFunction<
 			</div>
 		);
 	};
+	// 取出剩余插槽名
+	const propList = useMemo(() => {
+		const propList = contentConfig.propList as any[];
+		const column = propList?.find(item => item.title === "操作");
+		if (column) column["render"] = tableRowBtns;
+		// console.log("propList", propList, listData);
+		// 根据配置里的slotname找到传入的slot-renderfuntion来渲染
+		propList?.forEach(item => {
+			if (item.slotName) {
+				const slot = Slots && Object.keys(Slots)?.find(slot => slot === item.slotName);
+				if (slot) {
+					item["render"] = Slots[slot] && Slots[slot];
+				}
+			}
+		});
+		return propList;
+	}, [contentConfig]);
 	let otherQueryInfo = {};
 	const getData = async (otherInfo: any = {}) => {
 		if (!isQuery) return;
@@ -104,9 +126,10 @@ const Content: ForwardRefRenderFunction<
 			<ZnTable
 				listData={listData}
 				totalCount={totalCount}
-				operatorColumn={tableRowBtns}
+				// operatorColumn={tableRowBtns}
 				setPage={setPage}
 				{...contentConfig}
+				propList={propList}
 				headerHandler={headerHandler()}
 			></ZnTable>
 		</div>
